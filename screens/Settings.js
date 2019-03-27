@@ -1,11 +1,11 @@
 import React from 'react';
-import { View, Text, StatusBar } from 'react-native';
-import { ExpoConfigView } from '@expo/samples';
+import { ScrollView, StyleSheet, View, Image, Text, StatusBar, } from 'react-native';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
+import { ExpoLinksView } from '@expo/samples';
 
 class Settings extends React.Component {
   static navigationOptions = {
-    title: 'app.json',
+    title: 'Explore',
   };
 
   constructor(props) {
@@ -25,24 +25,32 @@ class Settings extends React.Component {
    });
  }
 
-
   render() {
-    /* Go ahead and delete ExpoConfigView and replace it with your
-     * content, we just wanted to give you a quick view of your config */
-     console.log('settings', this.props);
-     return (
-       <View style={{flex:1, flexDirection: 'row', justifyContent: 'center'}}>
-        <MultiSlider
-          min={0}
-          max={10}
-          step={1}
-          onValuesChange={this.change}
-          value={this.state.value}
-        />
-        <Text>{this.state.value}</Text>
-       </View>
-     )
+    return (
+      <ScrollView style={styles.container}>
+        {/* Go ahead and delete ExpoLinksView and replace it with your
+           * content, we just wanted to provide you with some helpful links */}
+           <View style={{flex:1, flexDirection: 'column', justifyContent: 'center'}}>
+              <MultiSlider
+                min={0}
+                max={10}
+                step={1}
+                onValuesChange={this.change}
+                value={this.state.value}
+              />
+              <Text>{this.state.value}</Text>
+          </View>
+      </ScrollView>
+    );
   }
 }
 
 export default Settings;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingTop: 15,
+    backgroundColor: '#fff',
+  },
+});

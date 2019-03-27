@@ -20,8 +20,7 @@ export default StyleSheet.create({
     resizeMode: 'cover'
   },
   content: {
-    marginTop: 20,
-    marginBottom: 20
+    marginVertical: 20
   },
   text: {
     backgroundColor: 'transparent',
@@ -30,13 +29,15 @@ export default StyleSheet.create({
     color: '#fff',
     textAlign: 'center'
   },
+  logo: {
+    width: '100%',
+    height: 200,
+    resizeMode: 'cover'
+  },
   username: {
     fontSize: 18
   },
-  buttonContainer: {
-    // padding: 10,
-    // borderRadius: 10
-  },
+  buttonContainer: {},
   button: {
     color: '#fff',
     fontWeight: 'bold',
@@ -49,12 +50,12 @@ export default StyleSheet.create({
     padding: 10
   },
   input: {
-    backgroundColor: 'transparent',
-    width: 200,
-    height: 50,
-    borderStyle: 'solid',
-    borderBottomWidth: 5,
-    borderColor: "#000"
+    backgroundColor: '#fff',
+    width: '100%',
+    height: 35,
+    marginVertical: 5,
+    color: '#000',
+    paddingLeft: 10
   },
   signup: {
     justifyContent: 'center',

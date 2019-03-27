@@ -13,11 +13,20 @@
   "dependencies": {
     "@expo/samples": "2.1.1",
     "@ptomasroos/react-native-multi-slider": "^1.0.0",
+    "async": "^2.6.2",
+    "axios": "^0.18.0",
     "expo": "^32.0.0",
+    "lodash": "^4.17.11",
     "react": "16.5.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
+    "react-native-image-overlay": "^0.1.2",
     "react-native-maps": "^0.23.0",
-    "react-navigation": "^3.0.9"
+    "react-native-paper": "^2.14.0",
+    "react-navigation": "^3.0.9",
+    "react-redux": "^6.0.1",
+    "redux": "^4.0.1",
+    "redux-promise": "^0.6.0",
+    "redux-thunk": "^2.3.0"
   },
   "devDependencies": {
     "babel-preset-expo": "^5.0.0",
