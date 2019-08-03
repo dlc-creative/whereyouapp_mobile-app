@@ -7,3 +7,10 @@ export function searchRestaurants(data) {
     payload: data
   }
 }
+
+export function getLocation(data) {
+  return {
+    type: 'GET_LOCATION',
+    payload: data
+  }
+}

@@ -1,4 +1,3 @@
-import Config from '../app.config.js';
 import React from 'react';
 import {
   Text,

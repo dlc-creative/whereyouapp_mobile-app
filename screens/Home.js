@@ -12,70 +12,81 @@ import {
 } from 'react-native';
 import MapView from 'react-native-maps';
 import { WebBrowser } from 'expo';
-
 import { MonoText } from '../components/StyledText';
+import {bindActionCreators} from 'redux';
+import {connect} from 'react-redux';
+import {getLocation} from '../actions/index';
+import _ from 'lodash';
 
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
+const ASPECT_RATIO = width / height;
+const LATITUDE_DELTA = 0.0922;
+const LONGITUDE_DELTA = 0.0421; //LATITUDE_DELTA * ASPECT_RATIO;
 
 class Home extends React.Component {
 
   constructor(props) {
     super(props);
-
     this.state = {
-      apiResults: [],
-      position: {
-        latitude: 41.882702,
-        longitude: -87.619392,
-        latitudeDelta: 0.0922,
-        longitudeDelta: 0.0421
-      },
-      markerPosition: {
+      initialPosition: {
         latitude: 0,
-        longitude: 0
+        longitude: 0,
+        latitudeDelta: 0,
+        longitudeDelta: 0
       },
-      currentPosition: {
-        latitude: '',
-        logitude: ''
+      region: {
+        latitude: 0,
+        longitude: 0,
+        latitudeDelta: 0,
+        longitudeDelta: 0
       }
-    };
-
-    this.onRegionChange = this.onRegionChange.bind(this);
+    }
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    navigator.geolocation.getCurrentPosition((position) => {
+      var lat = parseFloat(position.coords.latitude);
+      var long = parseFloat(position.coords.longitude);
+      var region = {
+        latitude: lat,
+        longitude: long,
+        latitudeDelta: LATITUDE_DELTA,
+        longitudeDelta: LONGITUDE_DELTA,
+      };
+      this.setState({region: region});
+      return this.props.getLocation(region);
+    },
+    (error) => alert(JSON.stringify(error)),
+    {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000});
+    //     this.watchID = navigator.geolocation.watchPosition((position) => {
+    //   const newRegion = {
+    //     latitude: position.coords.latitude,
+    //     longitude: position.coords.longitude,
+    //     latitudeDelta: LATITUDE_DELTA,
+    //     longitudeDelta: LONGITUDE_DELTA
+    //   }
+    //
+    //   this.onRegionChange({region: newRegion});
+    // });
+  }
 
   static navigationOptions = {
     header: null,
   };
 
   onRegionChange(region) {
-    this.setState({ region });
+    this.setState({ region: region });
   }
 
-
   render() {
-    // WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/guides/development-mode');
-    console.log('ps', Platform.OS);
-    console.log('width', width, 'height', height);
-    // <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-    //   <View style={styles.welcomeContainer}>
-    //     <Text>Where You App</Text>
-    //   </View>
-    //
-    //   <View style={styles.helpContainer}>
-    //     <TouchableOpacity onPress={this._handleHelpPress} style={styles.helpLink}>
-    //       <Text style={styles.helpLinkText}>Map</Text>
-    //     </TouchableOpacity>
-    //   </View>
-    // </ScrollView>
     return (
       <View style={styles.container}>
         <MapView
           style={styles.map}
-          region={this.state.position}>
-        </MapView>
+          region={this.state.region}
+          onRegionChange={region => this.setState({region: region})}
+          showsUserLocation={true}/>
         <View style={styles.searchbar}>
           <TextInput
             placeholder="Search..."
@@ -92,7 +103,17 @@ class Home extends React.Component {
   }
 }
 
-export default Home;
+function mapStateToProps(state) {
+	return {
+		location: state.location
+	}
+}
+
+function matchDispatchToProps(dispatch) {
+	return bindActionCreators({getLocation: getLocation}, dispatch);
+}
+
+export default connect(mapStateToProps, matchDispatchToProps)(Home);
 
 const styles = StyleSheet.create({
   container: {

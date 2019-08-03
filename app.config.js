@@ -1,12 +1,15 @@
 'use strict';
 
 const config = {
-	env: process.env.NODE_ENV || 'local',
+	env: process.env.NODE_ENV || 'development',
 	production: {},
-	local: {},
+	development: {
+		zomato_api_url: 'https://developers.zomato.com/api/v2.1/',
+		zomato_api_key: '4d698083d03a6a306cc2a44fa13b23ee'
+	},
 	get current() {
 		return this[this.env];
 	}
-}
+};
 
-export default config;
+module.exports = config;

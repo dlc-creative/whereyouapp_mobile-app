@@ -6,6 +6,7 @@ import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import config from '../app.config';
 import {searchRestaurants} from '../actions/index';
+import {buildRequest} from '../helpers/index';
 import styles from '../styles/_explore.js';
 import _ from 'lodash';
 
@@ -15,21 +16,38 @@ class Explore extends React.Component {
   constructor(props) {
     super(props);
 
+    this.exploreRestaurants = this.exploreRestaurants.bind(this);
+    this.getCityDetails = this.getCityDetails.bind(this);
+    this.getResturantsByCity = this.getResturantsByCity.bind(this);
+
   }
 
   componentDidMount() {
-    let request = config.current.zomato_api_url + 'search?entity_id=292&entity_type=city';
-    let headers = { headers: {'user-key': config.current.zomato_api_key} };
-    axios.get(request, headers)
-    .then((response) => {
-      return this.props.searchRestaurants(response.data.restaurants);
-    })
-    .catch((error) => {
-      console.error('error', error);
-    })
+    // get city_name => https://developers.zomato.com/api/v2.1/cities?lat=41.894386269181936&lon=-87.64146109999876
+    // get entity_id => https://developers.zomato.com/api/v2.1/locations?query=city_name
+    // get restaurants => 'search?entity_id=292&entity_type=city'
+    console.log('pulled location', this.props.location);
+    this.exploreRestaurants();
   }
 
- get allRestaurants() {
+  async exploreRestaurants() {
+    var cityID = await this.getCityDetails();
+    var cityRestaurants = await this.getResturantsByCity(cityID);
+    return this.props.searchRestaurants(cityRestaurants.restaurants);
+  }
+
+  async getCityDetails() {
+      // LOS ANGELES | LAT: 34.05217 & LONG: -118.243469
+      let response = await buildRequest(`cities?lat=${this.props.location.latitude}&lon=${this.props.location.longitude}`);
+      return response.data.location_suggestions[0].id;
+  }
+
+  async getResturantsByCity(entityId) {
+      let response = await buildRequest(`search?entity_id=${entityId}&entity_type=city`);
+      return response.data;
+  }
+
+  get allRestaurants() {
    return _.map(this.props.restaurants, (restaurant, idx) => {
      return (
         <View style={styles.restaurant} key={idx}>
@@ -45,12 +63,12 @@ class Explore extends React.Component {
         </View>
      )
    });
- }
+  }
 
   render() {
      return (
        <View style={styles.restaurantList}>
-          <ScrollView>{this.allRestaurants}</ScrollView>
+         <ScrollView>{this.allRestaurants}</ScrollView>
        </View>
      )
   }
@@ -58,7 +76,8 @@ class Explore extends React.Component {
 
 function mapStateToProps(state) {
 	return {
-		restaurants: state.restaurants
+		restaurants: state.restaurants,
+    location: state.location
 	}
 }
 
