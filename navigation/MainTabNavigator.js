@@ -6,10 +6,12 @@ import TabBarIcon from '../components/TabBarIcon';
 import Home from '../screens/Home';
 import Explore from '../screens/Explore';
 import Settings from '../screens/Settings';
+// import RestaurantProfile from '../screens/RestaurantProfile';
 
 const HomeStack = createStackNavigator({ Home: Home });
 const ExploreStack = createStackNavigator({ Explore: Explore });
 const SettingsStack = createStackNavigator({ Settings: Settings });
+// const RestaurantProfileStack = createStackNavigator({ RestaurantProfile: RestaurantProfile });
 
 var stacks = [
   {stack: HomeStack, label: 'Home', icon: 'ios-map'},

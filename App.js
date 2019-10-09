@@ -1,6 +1,8 @@
 import React from 'react';
-import { Platform, StatusBar, StyleSheet, View} from 'react-native';
-import { AppLoading, Asset, Font, Icon } from 'expo';
+import { Platform, StatusBar, StyleSheet, View } from 'react-native';
+import { Asset, Icon } from 'expo-asset';
+import * as Font from 'expo-font';
+import { AppLoading } from 'expo';
 import {createStore, applyMiddleware, compose} from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import {Provider} from 'react-redux';
