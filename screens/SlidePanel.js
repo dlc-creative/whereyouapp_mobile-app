@@ -1,17 +1,5 @@
 import React from 'react';
-import {
-  View,
-  ImageBackground,
-  Button,
-  Text,
-  StatusBar,
-  ScrollView,
-  WebView,
-  Dimensions,
-  Animated,
-  TouchableHighlight,
-  ActivityIndicator
-} from 'react-native';
+import { View, ImageBackground, Button, Text, StatusBar, ScrollView, WebView, Dimensions, Animated } from 'react-native';
 import { ExpoConfigView, ExpoLinksView } from '@expo/samples';
 import axios from 'axios';
 import {bindActionCreators} from 'redux';
@@ -21,6 +9,9 @@ import {searchRestaurants} from '../actions/index';
 import {buildRequest} from '../helpers/index';
 import styles from '../styles/_explore.js';
 import _ from 'lodash';
+import SlidingUpPanel from 'rn-sliding-up-panel';
+
+const { height } = Dimensions.get("window");
 
 class Explore extends React.Component {
   static navigationOptions = { title: 'Explore' };
@@ -34,11 +25,11 @@ class Explore extends React.Component {
 
   }
 
-  componentDidMount = async() => {
+  componentDidMount() {
     // get city_name => https://developers.zomato.com/api/v2.1/cities?lat=41.894386269181936&lon=-87.64146109999876
     // get entity_id => https://developers.zomato.com/api/v2.1/locations?query=city_name
     // get restaurants => 'search?entity_id=292&entity_type=city'
-    await this.exploreRestaurants();
+    this.exploreRestaurants();
   }
 
   async exploreRestaurants() {
@@ -59,12 +50,9 @@ class Explore extends React.Component {
   }
 
   get allRestaurants() {
-    const {navigate} = this.props.navigation;
-    console.log('navigate', navigate);
    return _.map(this.props.restaurants, (restaurant, idx) => {
      return (
         <View style={styles.restaurant} key={idx}>
-        <TouchableHighlight onPress={() => navigate('RestaurantProfile')}>
            <ImageBackground source={{uri: restaurant.restaurant.featured_image}} style={styles.restaurantImage}>
              <View style={styles.overlay} />
              <Text style={styles.restaurantName}>{restaurant.restaurant.name}</Text>
@@ -73,7 +61,6 @@ class Explore extends React.Component {
                <Text style={styles.votes}>{restaurant.restaurant.user_rating.votes}</Text>
              </View>
            </ImageBackground>
-           </TouchableHighlight>
            <Text style={styles.restaurantLocation}>{`${restaurant.restaurant.location.address}, ${restaurant.restaurant.location.city}, ${restaurant.restaurant.location.zipcode}`}</Text>
         </View>
      )
@@ -87,14 +74,90 @@ class Explore extends React.Component {
   //    />
   // </View>
 
+  // <View style={styles.restaurantList}>
+  //   <ScrollView>{this.allRestaurants}</ScrollView>
+  // </View>
+
+  static defaultProps = {
+  draggableRange: { top: height + 180 - 64, bottom: 180 }
+  };
+
+  _draggedValue = new Animated.Value(180);
 
   render() {
-    console.log('restaurant', this.props.restaurants);
+    console.log('restaurant', this.props.restaurants[0]);
+
+    const { top, bottom } = this.props.draggableRange;
+
+const backgoundOpacity = this._draggedValue.interpolate({
+  inputRange: [height - 48, height],
+  outputRange: [1, 0],
+  extrapolate: "clamp"
+});
+
+const iconTranslateY = this._draggedValue.interpolate({
+  inputRange: [height - 56, height, top],
+  outputRange: [0, 56, 180 - 32],
+  extrapolate: "clamp"
+});
+
+const textTranslateY = this._draggedValue.interpolate({
+  inputRange: [bottom, top],
+  outputRange: [0, 8],
+  extrapolate: "clamp"
+});
+
+const textTranslateX = this._draggedValue.interpolate({
+  inputRange: [bottom, top],
+  outputRange: [0, -112],
+  extrapolate: "clamp"
+});
+
+const textScale = this._draggedValue.interpolate({
+  inputRange: [bottom, top],
+  outputRange: [1, 0.7],
+  extrapolate: "clamp"
+});
      return (
        <View style={styles.container}>
-       { this.props.restaurants.length == 0 && (
-         <ActivityIndicator size="large" color="#ff0000" />
-       ) }
+         <Text onPress={() => this._panel.show(360)}>Show panel</Text>
+         <SlidingUpPanel
+           ref={c => (this._panel = c)}
+           draggableRange={this.props.draggableRange}
+           animatedValue={this._draggedValue}
+           snappingPoints={[360]}
+           height={height + 180}
+           friction={0.5}
+           style={styles.slidePanel}
+         >
+           <View style={styles.panel}>
+             <Animated.View
+               style={[
+                 styles.iconBg,
+                 {
+                   opacity: backgoundOpacity,
+                   transform: [{ translateY: iconTranslateY }]
+                 }
+               ]}
+             />
+             <View style={styles.panelHeader}>
+               <Animated.View
+                 style={{
+                   transform: [
+                     { translateY: textTranslateY },
+                     { translateX: textTranslateX },
+                     { scale: textScale }
+                   ]
+                 }}
+               >
+                 <Text style={styles.textHeader}>Sliding Up Panel</Text>
+               </Animated.View>
+             </View>
+             <View style={styles.container}>
+               <Text>Bottom sheet content</Text>
+             </View>
+           </View>
+         </SlidingUpPanel>
          <View style={styles.restaurantList}>
            <ScrollView>{this.allRestaurants}</ScrollView>
          </View>

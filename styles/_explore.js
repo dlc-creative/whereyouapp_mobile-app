@@ -8,8 +8,43 @@ export default StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    zIndex: 0
   },
+  slidePanel: {
+    flex: 1,
+    position: 'absolute',
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height,
+    zIndex: 20
+  },
+  panel: {
+    flex: 1,
+    backgroundColor: "white",
+    position: "relative",
+    zIndex: 10
+  },
+  panelHeader: {
+    height: 180,
+    backgroundColor: "#fe8800",
+    justifyContent: "flex-end",
+    padding: 24
+  },
+  textHeader: {
+    fontSize: 28,
+    color: "#FFF"
+  },
+  restaurantProfileContainer: {
+    flex: 1,
+    zIndex: 10,
+    position: 'absolute',
+    // backgroundColor: '#fff',
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height,
+    // top: 0,
+    // bottom: 0,
+    // left: 0
+   },
   restaurant: {
     color: '#000',
     flex: 1,

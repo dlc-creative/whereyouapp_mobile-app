@@ -10,8 +10,8 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-import MapView from 'react-native-maps';
-import { WebBrowser } from 'expo';
+import MapView, { Marker } from 'react-native-maps';
+// import { WebBrowser } from 'expo';
 import { MonoText } from '../components/StyledText';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
@@ -85,13 +85,21 @@ class Home extends React.Component {
         <MapView
           style={styles.map}
           region={this.state.region}
-          onRegionChange={region => this.setState({region: region})}
-          showsUserLocation={true}/>
+          showsUserLocation={true}>
+          {this.props.restaurants.map((marker, index) => (
+            <Marker
+              key={index}
+              coordinate={{latitude: marker.restaurant.location.latitude, longitude: marker.restaurant.location.longitude}}
+              title={marker.restaurant.name}
+              description={marker.restaurant.cuisines}
+            />
+          ))}
+        </MapView>
         <View style={styles.searchbar}>
           <TextInput
             placeholder="Search..."
-            style={styles.search}
-          ></TextInput>
+            style={styles.search}>
+          </TextInput>
         </View>
         <View style={styles.tabBarInfoContainer}>
           <Text style={styles.tabBarInfoText}>Where You App</Text>
@@ -105,6 +113,7 @@ class Home extends React.Component {
 
 function mapStateToProps(state) {
 	return {
+    restaurants: state.restaurants,
 		location: state.location
 	}
 }
