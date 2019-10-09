@@ -80,21 +80,6 @@ class Home extends React.Component {
   }
 
   render() {
-    console.log('props', this.props.location);
-      // WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/guides/development-mode');
-      // {this.state.markers.map((marker, index) => (
-      //   <Marker
-      //     key={index}
-      //     coordinate={marker.coordinates}
-      //     title={marker.title}
-      //     description={marker.description}
-      //   />
-      // ))}
-
-      // <MapView
-      //   style={styles.map}
-      //   region={this.state.region}
-      //   showsUserLocation={true}/>
     return (
       <View style={styles.container}>
         <MapView

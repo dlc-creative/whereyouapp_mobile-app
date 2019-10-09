@@ -29,7 +29,6 @@ class Explore extends React.Component {
     // get city_name => https://developers.zomato.com/api/v2.1/cities?lat=41.894386269181936&lon=-87.64146109999876
     // get entity_id => https://developers.zomato.com/api/v2.1/locations?query=city_name
     // get restaurants => 'search?entity_id=292&entity_type=city'
-    console.log('pulled location', this.props.location);
     this.exploreRestaurants();
   }
 
