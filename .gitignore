@@ -11,6 +11,5 @@ node_modules/
 
 server/
 
-app.config.js
 firebase.js
 rn-cli.config.js
