@@ -52,11 +52,10 @@ export default StyleSheet.create({
   input: {
     backgroundColor: '#fff',
     width: '100%',
-    height: 50,
-    marginVertical: 10,
+    height: 35,
+    marginVertical: 5,
     color: '#000',
-    paddingLeft: 10,
-    borderRadius: 5
+    paddingLeft: 10
   },
   signup: {
     justifyContent: 'center',

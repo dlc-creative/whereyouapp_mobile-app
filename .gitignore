@@ -1,8 +1,16 @@
 node_modules/**/*
-.expo/*
 npm-debug.*
 *.jks
 *.p12
 *.key
 *.mobileprovision
+
+build/
+dist/
+node_modules/
+
+server/
+
 app.config.js
+firebase.js
+rn-cli.config.js
