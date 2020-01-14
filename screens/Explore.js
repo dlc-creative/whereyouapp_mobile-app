@@ -12,6 +12,8 @@ import {
   TouchableHighlight,
   ActivityIndicator
 } from 'react-native';
+import Modal, { ModalTitle, ModalContent } from 'react-native-modals';
+import { Ionicons } from '@expo/vector-icons';
 import { ExpoConfigView, ExpoLinksView } from '@expo/samples';
 import axios from 'axios';
 import {bindActionCreators} from 'redux';
@@ -28,55 +30,32 @@ class Explore extends React.Component {
   constructor(props) {
     super(props);
 
-    this.exploreRestaurants = this.exploreRestaurants.bind(this);
-    this.getCityDetails = this.getCityDetails.bind(this);
-    this.getResturantsByCity = this.getResturantsByCity.bind(this);
+    this.state = {
+      modal: true
+    };
 
-  }
-
-  componentDidMount = async() => {
-    // get city_name => https://developers.zomato.com/api/v2.1/cities?lat=41.894386269181936&lon=-87.64146109999876
-    // get entity_id => https://developers.zomato.com/api/v2.1/locations?query=city_name
-    // get restaurants => 'search?entity_id=292&entity_type=city'
-    await this.exploreRestaurants();
-  }
-
-  async exploreRestaurants() {
-    var cityID = await this.getCityDetails();
-    var cityRestaurants = await this.getResturantsByCity(cityID);
-    return this.props.searchRestaurants(cityRestaurants.restaurants);
-  }
-
-  async getCityDetails() {
-      // LOS ANGELES | LAT: 34.05217 & LONG: -118.243469
-      let response = await buildRequest(`cities?lat=${this.props.location.latitude}&lon=${this.props.location.longitude}`);
-      return response.data.location_suggestions[0].id;
-  }
-
-  async getResturantsByCity(entityId) {
-      let response = await buildRequest(`search?entity_id=${entityId}&entity_type=city`);
-      return response.data;
   }
 
   get allRestaurants() {
-    const {navigate} = this.props.navigation;
-    console.log('navigate', navigate);
+   const {navigate} = this.props.navigation;
    return _.map(this.props.restaurants, (restaurant, idx) => {
-     return (
-        <View style={styles.restaurant} key={idx}>
-        <TouchableHighlight onPress={() => navigate('RestaurantProfile')}>
-           <ImageBackground source={{uri: restaurant.restaurant.featured_image}} style={styles.restaurantImage}>
-             <View style={styles.overlay} />
-             <Text style={styles.restaurantName}>{restaurant.restaurant.name}</Text>
-             <View style={styles.baseline}>
-               <Text style={styles.cuisines}>{restaurant.restaurant.cuisines}</Text>
-               <Text style={styles.votes}>{restaurant.restaurant.user_rating.votes}</Text>
-             </View>
-           </ImageBackground>
-           </TouchableHighlight>
-           <Text style={styles.restaurantLocation}>{`${restaurant.restaurant.location.address}, ${restaurant.restaurant.location.city}, ${restaurant.restaurant.location.zipcode}`}</Text>
-        </View>
-     )
+     if (restaurant.restaurant.featured_image !== "") {
+       return (
+          <View style={styles.restaurant} key={idx}>
+          <TouchableHighlight onPress={() => navigate('RestaurantProfile', {restaurant: restaurant.restaurant})}>
+             <ImageBackground source={{uri: restaurant.restaurant.featured_image}} style={styles.restaurantImage}>
+               <View style={styles.overlay} />
+               <Text style={styles.restaurantName}>{restaurant.restaurant.name}</Text>
+               <View style={styles.baseline}>
+                 <Text style={styles.cuisines}>{restaurant.restaurant.cuisines}</Text>
+                 <Text style={styles.votes}><Ionicons name="md-heart" color="red" /> {restaurant.restaurant.user_rating.votes}</Text>
+               </View>
+             </ImageBackground>
+             </TouchableHighlight>
+             <Text style={styles.restaurantLocation}>{`${restaurant.restaurant.location.address}, ${restaurant.restaurant.location.city}, ${restaurant.restaurant.location.zipcode}`}</Text>
+          </View>
+       )
+     }
    });
   }
 
@@ -89,7 +68,6 @@ class Explore extends React.Component {
 
 
   render() {
-    console.log('restaurant', this.props.restaurants);
      return (
        <View style={styles.container}>
        { this.props.restaurants.length == 0 && (
@@ -105,6 +83,7 @@ class Explore extends React.Component {
 
 function mapStateToProps(state) {
 	return {
+    authentication: state.authentication,
 		restaurants: state.restaurants,
     location: state.location
 	}

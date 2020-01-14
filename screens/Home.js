@@ -1,21 +1,24 @@
 import React from 'react';
 import {
+  View,
+  Text,
   Image,
   Dimensions,
   Platform,
   ScrollView,
   StyleSheet,
-  Text,
   TextInput,
   TouchableOpacity,
-  View
+  ActivityIndicator
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-// import { WebBrowser } from 'expo';
 import { MonoText } from '../components/StyledText';
+import config from '../app.config';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import {getLocation} from '../actions/index';
+import {getLocation, searchRestaurants} from '../actions/index';
+import {buildRequest} from '../helpers/index';
+import styles from '../styles/_home.js';
 import _ from 'lodash';
 
 const width = Dimensions.get('window').width;
@@ -40,11 +43,20 @@ class Home extends React.Component {
         longitude: 0,
         latitudeDelta: 0,
         longitudeDelta: 0
-      }
+      },
+      search: ''
     }
+
+    this.exploreRestaurants = this.exploreRestaurants.bind(this);
+    this.getCityDetails = this.getCityDetails.bind(this);
+    this.getResturantsByCity = this.getResturantsByCity.bind(this);
+    this.onKeyPress = this.onKeyPress.bind(this);
   }
 
-  componentDidMount() {
+  componentDidMount = async() => {
+    // get city_name => https://developers.zomato.com/api/v2.1/cities?lat=41.894386269181936&lon=-87.64146109999876
+    // get entity_id => https://developers.zomato.com/api/v2.1/locations?query=city_name
+    // get restaurants => 'search?entity_id=292&entity_type=city'
     navigator.geolocation.getCurrentPosition((position) => {
       var lat = parseFloat(position.coords.latitude);
       var long = parseFloat(position.coords.longitude);
@@ -55,20 +67,52 @@ class Home extends React.Component {
         longitudeDelta: LONGITUDE_DELTA,
       };
       this.setState({region: region});
+      this.exploreRestaurants(region, false);
       return this.props.getLocation(region);
     },
     (error) => alert(JSON.stringify(error)),
     {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000});
-    //     this.watchID = navigator.geolocation.watchPosition((position) => {
-    //   const newRegion = {
-    //     latitude: position.coords.latitude,
-    //     longitude: position.coords.longitude,
-    //     latitudeDelta: LATITUDE_DELTA,
-    //     longitudeDelta: LONGITUDE_DELTA
-    //   }
-    //
-    //   this.onRegionChange({region: newRegion});
-    // });
+    this.watchID = navigator.geolocation.watchPosition((position) => {
+      const newRegion = {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+        latitudeDelta: LATITUDE_DELTA,
+        longitudeDelta: LONGITUDE_DELTA
+      }
+      this.onRegionChange(newRegion);
+    });
+ }
+
+  componentWillUnmount = async() => {
+    navigator.geolocation.clearWatch(this.watchID);
+    this.exploreRestaurants(this.props.location, false);
+ }
+
+  async onKeyPress(e) {
+    let search = (this.state.search !== "") ? true : false;
+    await this.exploreRestaurants(this.state.region, search);
+  }
+
+  async exploreRestaurants(location, search) {
+    let cityID = await this.getCityDetails(location);
+    let cityRestaurants = await this.getResturantsByCity(cityID, search);
+    return this.props.searchRestaurants(cityRestaurants.restaurants);
+  }
+
+  async getCityDetails(location) {
+    // LOS ANGELES | LAT: 34.05217 & LONG: -118.243469
+    let response = await buildRequest(`cities?lat=${location.latitude}&lon=${location.longitude}`);
+    return response.data.location_suggestions[0].id;
+  }
+
+  async getResturantsByCity(entityId, search) {
+    let response;
+    if (!search) {
+      response = await buildRequest(`search?entity_id=${entityId}&entity_type=city`);
+    } else {
+      response = await buildRequest(`search?entity_id=${entityId}&entity_type=city&q=${this.state.search}`);
+    }
+    return response.data;
   }
 
   static navigationOptions = {
@@ -89,7 +133,7 @@ class Home extends React.Component {
           {this.props.restaurants.map((marker, index) => (
             <Marker
               key={index}
-              coordinate={{latitude: marker.restaurant.location.latitude, longitude: marker.restaurant.location.longitude}}
+              coordinate={{latitude: parseFloat(marker.restaurant.location.latitude), longitude: parseFloat(marker.restaurant.location.longitude)}}
               title={marker.restaurant.name}
               description={marker.restaurant.cuisines}
             />
@@ -98,13 +142,12 @@ class Home extends React.Component {
         <View style={styles.searchbar}>
           <TextInput
             placeholder="Search..."
-            style={styles.search}>
+            style={styles.search}
+            onSubmitEditing={this.onKeyPress}
+            onChange={this.onSearchChange}
+            value={this.state.search}
+            >
           </TextInput>
-        </View>
-        <View style={styles.tabBarInfoContainer}>
-          <Text style={styles.tabBarInfoText}>Where You App</Text>
-          <View style={[styles.codeHighlightContainer, styles.navigationFilename]}>
-          </View>
         </View>
       </View>
     );
@@ -113,121 +156,14 @@ class Home extends React.Component {
 
 function mapStateToProps(state) {
 	return {
+    authentication: state.authentication,
     restaurants: state.restaurants,
 		location: state.location
 	}
 }
 
 function matchDispatchToProps(dispatch) {
-	return bindActionCreators({getLocation: getLocation}, dispatch);
+	return bindActionCreators({getLocation: getLocation, searchRestaurants: searchRestaurants}, dispatch);
 }
 
 export default connect(mapStateToProps, matchDispatchToProps)(Home);
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1
-  },
-  developmentModeText: {
-    marginBottom: 20,
-    color: 'rgba(0,0,0,0.4)',
-    fontSize: 14,
-    lineHeight: 19,
-    textAlign: 'center',
-  },
-  contentContainer: {
-    paddingTop: 30,
-  },
-  welcomeContainer: {
-    alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  welcomeImage: {
-    width: 100,
-    height: 80,
-    resizeMode: 'contain',
-    marginTop: 3,
-    marginLeft: -10,
-  },
-  getStartedContainer: {
-    alignItems: 'center',
-    marginHorizontal: 50,
-  },
-  homeScreenFilename: {
-    marginVertical: 7,
-  },
-  codeHighlightText: {
-    color: 'rgba(96,100,109, 0.8)',
-  },
-  codeHighlightContainer: {
-    backgroundColor: 'rgba(0,0,0,0.05)',
-    borderRadius: 3,
-    paddingHorizontal: 4,
-  },
-  getStartedText: {
-    fontSize: 17,
-    color: 'rgba(96,100,109, 1)',
-    lineHeight: 24,
-    textAlign: 'center',
-  },
-  tabBarInfoContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    ...Platform.select({
-      ios: {
-        shadowColor: 'black',
-        shadowOffset: { height: -3 },
-        shadowOpacity: 0.1,
-        shadowRadius: 3,
-      },
-      android: {
-        elevation: 20,
-      },
-    }),
-    alignItems: 'center',
-    backgroundColor: '#fbfbfb',
-    paddingVertical: 20,
-  },
-  tabBarInfoText: {
-    fontSize: 17,
-    color: 'rgba(96,100,109, 1)',
-    textAlign: 'center',
-  },
-  navigationFilename: {
-    marginTop: 5,
-  },
-  helpContainer: {
-    marginTop: 15,
-    alignItems: 'center',
-  },
-  helpLink: {
-    paddingVertical: 15,
-  },
-  helpLinkText: {
-    fontSize: 14,
-    color: '#2e78b7',
-  },
-  map: {
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-    flex: 1,
-    position: 'absolute'
-  },
-  searchbar: {
-    // flex: 1,
-    justifyContent: 'flex-start',
-    marginTop: 40,
-    alignItems: 'center'
-  },
-  search: {
-    backgroundColor: '#fff',
-    height: 40,
-    width: '90%',
-    padding: 10
-  }
-});

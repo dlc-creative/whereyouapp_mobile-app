@@ -85,7 +85,6 @@ class Explore extends React.Component {
   _draggedValue = new Animated.Value(180);
 
   render() {
-    console.log('restaurant', this.props.restaurants[0]);
 
     const { top, bottom } = this.props.draggableRange;
 
@@ -168,6 +167,7 @@ const textScale = this._draggedValue.interpolate({
 
 function mapStateToProps(state) {
 	return {
+    authentication: state.authentication,
 		restaurants: state.restaurants,
     location: state.location
 	}
