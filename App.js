@@ -58,8 +58,8 @@ export default class App extends React.Component {
         require('./assets/img/bg.png'),
 				require('./assets/img/logo.png')
       ]),
-      Font.loadAsync({
-        ...Ionicons.font,
+      Expo.Font.loadAsync({
+        Ionicons: require('@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Ionicons.ttf'),
         'space-mono': require('./assets/fonts/SpaceMono-Regular.ttf'),
       }),
     ]);
