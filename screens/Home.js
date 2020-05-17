@@ -50,6 +50,7 @@ class Home extends React.Component {
     this.exploreRestaurants = this.exploreRestaurants.bind(this);
     this.getCityDetails = this.getCityDetails.bind(this);
     this.getResturantsByCity = this.getResturantsByCity.bind(this);
+    this.onSearchChange = this.onSearchChange.bind(this);
     this.onKeyPress = this.onKeyPress.bind(this);
   }
 
@@ -121,6 +122,12 @@ class Home extends React.Component {
 
   onRegionChange(region) {
     this.setState({ region: region });
+  }
+
+  onSearchChange(e) {
+    this.setState({
+      search: e.nativeEvent.text
+    });
   }
 
   render() {
