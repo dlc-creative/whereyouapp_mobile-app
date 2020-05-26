@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { MonoText } from '../components/StyledText';
-import config from '../app.config';
+import config from '../config';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {getLocation, searchRestaurants} from '../actions/index';
@@ -50,6 +50,7 @@ class Home extends React.Component {
     this.exploreRestaurants = this.exploreRestaurants.bind(this);
     this.getCityDetails = this.getCityDetails.bind(this);
     this.getResturantsByCity = this.getResturantsByCity.bind(this);
+    this.onRegionChange = this.onRegionChange.bind(this);
     this.onSearchChange = this.onSearchChange.bind(this);
     this.onKeyPress = this.onKeyPress.bind(this);
   }
@@ -68,7 +69,6 @@ class Home extends React.Component {
         longitudeDelta: LONGITUDE_DELTA,
       };
       this.setState({region: region});
-      this.exploreRestaurants(region, false);
       return this.props.getLocation(region);
     },
     (error) => alert(JSON.stringify(error)),
@@ -86,12 +86,10 @@ class Home extends React.Component {
 
   componentWillUnmount = async() => {
     navigator.geolocation.clearWatch(this.watchID);
-    this.exploreRestaurants(this.props.location, false);
  }
 
   async onKeyPress(e) {
-    let search = (this.state.search !== "") ? true : false;
-    await this.exploreRestaurants(this.state.region, search);
+    await this.exploreRestaurants(this.state.region, true);
   }
 
   async exploreRestaurants(location, search) {
@@ -108,11 +106,7 @@ class Home extends React.Component {
 
   async getResturantsByCity(entityId, search) {
     let response;
-    if (!search) {
-      response = await buildRequest(`search?entity_id=${entityId}&entity_type=city`);
-    } else {
-      response = await buildRequest(`search?entity_id=${entityId}&entity_type=city&q=${this.state.search}`);
-    }
+    response = await buildRequest(`search?entity_id=${entityId}&entity_type=city&q=${this.state.search}`);
     return response.data;
   }
 

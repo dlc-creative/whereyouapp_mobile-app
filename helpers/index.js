@@ -1,6 +1,6 @@
 'use strict';
 
-import config from '../app.config';
+import config from '../config';
 import axios from 'axios';
 import bcrypt from 'react-native-bcrypt';
 import isaac from 'isaac';

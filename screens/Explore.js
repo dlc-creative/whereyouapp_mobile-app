@@ -18,7 +18,7 @@ import { ExpoConfigView, ExpoLinksView } from '@expo/samples';
 import axios from 'axios';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import config from '../app.config';
+import config from '../config';
 import {searchRestaurants} from '../actions/index';
 import {buildRequest} from '../helpers/index';
 import styles from '../styles/_explore.js';
@@ -39,32 +39,34 @@ class Explore extends React.Component {
   get allRestaurants() {
    const {navigate} = this.props.navigation;
    return _.map(this.props.restaurants, (restaurant, idx) => {
-     if (restaurant.restaurant.featured_image !== "") {
-       return (
-          <View style={styles.restaurant} key={idx}>
-          <TouchableHighlight onPress={() => navigate('RestaurantProfile', {restaurant: restaurant.restaurant})}>
-             <ImageBackground source={{uri: restaurant.restaurant.featured_image}} style={styles.restaurantImage}>
-               <View style={styles.overlay} />
-               <Text style={styles.restaurantName}>{restaurant.restaurant.name}</Text>
-               <View style={styles.baseline}>
-                 <Text style={styles.cuisines}>{restaurant.restaurant.cuisines}</Text>
-                 <Text style={styles.votes}><Ionicons name="md-heart" color="red" /> {restaurant.restaurant.user_rating.votes}</Text>
-               </View>
-             </ImageBackground>
-             </TouchableHighlight>
-             <Text style={styles.restaurantLocation}>{`${restaurant.restaurant.location.address}, ${restaurant.restaurant.location.city}, ${restaurant.restaurant.location.zipcode}`}</Text>
+     return (
+        <View style={styles.restaurant} key={idx}>
+        <TouchableHighlight onPress={() => navigate('RestaurantProfile', {restaurant: restaurant.restaurant})}>
+        { restaurant.restaurant.featured_image == "" ? (
+          <View style={styles.restaurantImageDefault}>
+            <View style={styles.overlay} />
+            <Text style={styles.restaurantName}>{restaurant.restaurant.name}</Text>
+            <View style={styles.baseline}>
+              <Text style={styles.cuisines}>{restaurant.restaurant.cuisines}</Text>
+              <Text style={styles.votes}><Ionicons name="md-heart" color="red" /> {restaurant.restaurant.user_rating.votes}</Text>
+            </View>
           </View>
-       )
-     }
+        ) : (
+           <ImageBackground source={{uri: restaurant.restaurant.featured_image}} style={styles.restaurantImage}>
+             <View style={styles.overlay} />
+             <Text style={styles.restaurantName}>{restaurant.restaurant.name}</Text>
+             <View style={styles.baseline}>
+               <Text style={styles.cuisines}>{restaurant.restaurant.cuisines}</Text>
+               <Text style={styles.votes}><Ionicons name="md-heart" color="red" /> {restaurant.restaurant.user_rating.votes}</Text>
+             </View>
+           </ImageBackground>
+         ) }
+           </TouchableHighlight>
+           <Text style={styles.restaurantLocation}>{`${restaurant.restaurant.location.address}, ${restaurant.restaurant.location.city}, ${restaurant.restaurant.location.zipcode}`}</Text>
+        </View>
+     )
    });
   }
-
-  // <View style={styles.restaurantProfileContainer}>
-  //   <WebView
-  //      source={{uri: 'https://google.com/'}}
-  //      style={{marginTop: 20, backgroundColor: '#fff'}}
-  //    />
-  // </View>
 
 
   render() {

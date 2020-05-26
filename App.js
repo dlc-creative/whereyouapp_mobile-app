@@ -11,7 +11,7 @@ import ReduxThunk from 'redux-thunk';
 import ReduxPromise from 'redux-promise';
 import allReducers from './reducers';
 import AppNavigator from './navigation/AppNavigator';
-import Config from './app.config';
+import Config from './config';
 import db from './firebase';
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;

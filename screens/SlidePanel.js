@@ -4,7 +4,7 @@ import { ExpoConfigView, ExpoLinksView } from '@expo/samples';
 import axios from 'axios';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import config from '../app.config';
+import config from '../config';
 import {searchRestaurants} from '../actions/index';
 import {buildRequest} from '../helpers/index';
 import styles from '../styles/_explore.js';

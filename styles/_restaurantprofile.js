@@ -38,12 +38,8 @@ export default StyleSheet.create({
     flex: 1,
     zIndex: 10,
     position: 'absolute',
-    // backgroundColor: '#fff',
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height,
-    // top: 0,
-    // bottom: 0,
-    // left: 0
    },
   restaurant: {
     color: '#000',
@@ -63,7 +59,16 @@ export default StyleSheet.create({
     display: 'flex',
     alignItems: 'flex-start',
     justifyContent: 'flex-end',
-    backgroundColor: '#000',
+    backgroundColor: '#A62D2D',
+    flex: 1
+  },
+  restaurantImageDefault: {
+    width: Dimensions.get('window').width - 20,
+    height: 100,
+    display: 'flex',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-end',
+    backgroundColor: '#A62D2D',
     flex: 1
   },
   overlay: {
@@ -112,9 +117,6 @@ export default StyleSheet.create({
     paddingHorizontal: 10,
     fontSize: 12
   },
-  restaurantProfile: {
-    // paddingHorizontal: 20
-  },
   restaurantInfoDetails: {
     justifyContent: 'space-between',
     alignItems: 'flex-start',
@@ -132,6 +134,5 @@ export default StyleSheet.create({
     width: Dimensions.get('window').width,
     height: 200,
     alignItems: 'center'
-    //paddingHorizontal : 30
   }
 });

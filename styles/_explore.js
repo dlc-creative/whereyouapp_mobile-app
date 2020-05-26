@@ -63,7 +63,16 @@ export default StyleSheet.create({
     display: 'flex',
     alignItems: 'flex-start',
     justifyContent: 'flex-end',
-    backgroundColor: '#000',
+    backgroundColor: '#A62D2D',
+    flex: 1
+  },
+  restaurantImageDefault: {
+    width: Dimensions.get('window').width - 20,
+    height: 80,
+    display: 'flex',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-end',
+    backgroundColor: '#A62D2D',
     flex: 1
   },
   overlay: {

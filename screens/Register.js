@@ -42,7 +42,7 @@ class Register extends React.Component {
       }
 
       if (state.email !== '' || state.email.length !== 0) {
-        if (!validateEmail(state.email)) {
+        if (!validateEmail(state.email.toLowerCase())) {
           alert('Not a valid email address');
           return;
         }
@@ -53,7 +53,7 @@ class Register extends React.Component {
         this.db.child('users').push({
           first_name: state.first_name,
           last_name: state.last_name,
-          email: state.email,
+          email: state.email.toLowerCase(),
           password: state.password
         });
         alert('Registration successful!');
