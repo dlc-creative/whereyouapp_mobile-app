@@ -15,7 +15,7 @@
     "@expo/samples": "2.1.1",
     "@expo/vector-icons": "^10.0.0",
     "@ptomasroos/react-native-multi-slider": "^1.0.0",
-    "async": "^2.6.2",
+    "async": "^3.2.2",
     "axios": "^0.18.0",
     "expo": "^37.0.0",
     "expo-asset": "~8.1.4",
